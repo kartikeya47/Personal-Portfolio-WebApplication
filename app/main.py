@@ -17,7 +17,10 @@ with open('app/templates/config.json', 'r') as c:
 
 db = SQLAlchemy(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
+if params['local_server'] == True:
+    pass
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 
 
 class Contacts(db.Model):
