@@ -5,6 +5,7 @@ import os
 from datetime import datetime
 
 db_uri = os.environ.get('DB_URI', None)
+db_uri_local = os.environ.get('DB_URI_LOCAL', None)
 
 app = Flask(__name__)
 
@@ -18,7 +19,7 @@ with open('app/templates/config.json', 'r') as c:
 db = SQLAlchemy(app)
 
 if params['local_server'] == True:
-    pass
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_uri_local
 else:
     app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 
@@ -43,7 +44,6 @@ class Blogs(db.Model):
     date = db.Column(db.String(12), nullable=True)
 
 
-
 @app.route("/")
 def index():
     blogs = Blogs.query.all()
@@ -63,7 +63,8 @@ def contact():
         email = request.form.get('email')
         subject = request.form.get('subject')
         message = request.form.get('message')
-        contacts = Contacts(name=name, email=email, subject=subject, message=message, date=datetime.now())
+        contacts = Contacts(name=name, email=email, subject=subject,
+                            message=message, date=datetime.now())
         db.session.add(contacts)
         db.session.commit()
         return redirect("/")
